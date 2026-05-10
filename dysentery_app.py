@@ -1,3 +1,11 @@
+from openai import OpenAI
+
+def get_openai_client():
+    try:
+        return OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    except Exception:
+        return None
+
 import streamlit as st
 
 st.set_page_config(
