@@ -85,6 +85,44 @@ if st.button("Analyse symptoms"):
     else:
         probable_type = "Unclassified diarrhoeal illness"
 
+def generate_ai_explanation(probable_type, red_flags, blood, mucus, fever, vomiting, dehydration, abdominal_pain):
+    client = get_openai_client()
+
+    if client is None:
+        return "AI explanation is unavailable because the OpenAI API key is not configured."
+
+    prompt = f"""
+You are an educational medical assistant.
+
+Important rules:
+- Do not diagnose.
+- Do not prescribe medicines.
+- Do not suggest antibiotic names or doses.
+- Recommend medical review for red flags.
+- Emphasize ORS, hydration, stool testing, and clinician consultation.
+
+Patient symptom summary:
+Blood in stool: {blood}
+Mucus in stool: {mucus}
+Fever: {fever}
+Vomiting: {vomiting}
+Dehydration: {dehydration}
+Abdominal pain: {abdominal_pain}
+
+Rule-based app result:
+Probable category: {probable_type}
+Detected red flags: {", ".join(red_flags) if red_flags else "None"}
+
+Write a short patient-friendly explanation in 120–180 words.
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt,
+    )
+
+    return response.output_text
+    
     st.header("Result")
 
     st.subheader("Probable category")
